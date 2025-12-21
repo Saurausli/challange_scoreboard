@@ -1,0 +1,11 @@
+Participant_ID,Submission_ID,0,1,2,3,4,5,6,7,8,9
+0,Submission_0_Sub_i,0,e,0,0,0,b,0,0,0,c
+1,Submission_1_Sub_i,0,b,d,e,f,e,0,0,a,c
+2,Submission_2_Sub_i,0,0,0,f,e,c,0,f,f,b
+3,Submission_3_Sub_i,0,d,e,g,0,f,0,b,0,0
+4,Submission_4_Sub_i,d,f,0,e,a,e,0,g,g,g
+5,Submission_5_Sub_i,0,g,c,g,b,c,0,0,a,0
+6,Submission_6_Sub_i,c,0,b,0,0,0,0,f,0,0
+7,Submission_7_Sub_i,0,g,c,d,e,a,e,0,e,0
+8,Submission_8_Sub_i,0,d,a,e,d,b,e,a,b,f
+9,Submission_9_Sub_i,0,d,e,a,f,0,c,f,d,b

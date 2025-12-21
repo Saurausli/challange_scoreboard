@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreboard Matrix</title>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .loading-spinner {
+            border: 3px solid #374151;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        table {
+            border-collapse: separate;
+            border-spacing: 2px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        th {
+            background-color: #1f2937;
+            color: #60a5fa;
+            border: 2px solid #374151;
+        }
+        td {
+            border: 2px solid #374151;
+        }
+        .green {
+            background-color: #166534;
+            color: white;
+        }
+        .red {
+            background-color: #991b1b;
+            color: white;
+        }
+        td:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8 fade-in">
+            <h1 class="text-5xl font-bold text-white mb-2">📊 Scoreboard Matrix</h1>
+            <p class="text-gray-300 text-lg">Participant Rankings</p>
+            <div id="lastUpdate" class="text-sm text-gray-400 mt-2"></div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="flex justify-center items-center py-20">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="hidden bg-red-900 border border-red-600 text-red-200 px-4 py-3 rounded-lg mb-6">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <!-- Matrix Table -->
+        <div id="matrixContainer" class="bg-gray-800 rounded-lg shadow-2xl p-6 overflow-x-auto fade-in" style="animation-delay: 0.2s">
+            <table id="scoreTable" class="w-full"></table>
+        </div>
+
+        <!-- Legend -->
+        <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6 fade-in" style="animation-delay: 0.4s">
+            <h3 class="text-xl font-bold text-white mb-4">Legend</h3>
+            <div class="flex flex-wrap gap-4">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 green rounded mr-2"></div>
+                    <span class="text-gray-300">Value = 0</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 red rounded mr-2"></div>
+                    <span class="text-gray-300">Other values</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use the raw GitHub URL
+        const CSV_URL = 'https://raw.githubusercontent.com/Saurausli/RTDT_Leaderboard/main/ranking.csv';
+        let allData = [];
+
+        function loadMatrix() {
+            console.log('🔍 Loading CSV from:', CSV_URL);
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: false,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    console.log('✅ CSV loaded! Rows:', results.data.length);
+                    console.log('📊 First row:', results.data[0]);
+                    allData = results.data;
+                    document.getElementById('loading').style.display = 'none';
+                    renderMatrix();
+                    updateTimestamp();
+                },
+                error: function(error) {
+                    console.error('❌ Error loading CSV:', error);
+                    document.getElementById('loading').style.display = 'none';
+                    showError('Could not load CSV: ' + error.message);
+                }
+            });
+        }
+
+        function renderMatrix() {
+            const table = document.getElementById('scoreTable');
+            table.innerHTML = '';
+            
+            if (allData.length === 0) {
+                showError('No data found in CSV file');
+                return;
+            }
+
+            allData.forEach((row, i) => {
+                const tr = document.createElement('tr');
+                tr.style.animationDelay = `${i * 0.05}s`;
+                tr.className = 'fade-in';
+                
+                row.forEach((cell, j) => {
+                    const element = i === 0 ? document.createElement('th') : document.createElement('td');
+                    element.textContent = cell;
+                    
+                    // Apply color coding for data cells (not headers)
+                    if (i > 0 && j > 0) {
+                        element.className = cell === '0' ? 'green' : 'red';
+                    }
+                    
+                    tr.appendChild(element);
+                });
+                
+                table.appendChild(tr);
+            });
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                `Last updated: ${now.toLocaleString('en-US')}`;
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('error').classList.remove('hidden');
+        }
+
+        // Initialize
+        loadMatrix();
+    </script>
+</body>
+</html>
