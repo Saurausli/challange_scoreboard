@@ -42,6 +42,7 @@
             border: 2px solid #374151;
         }
         td {
+            color: white;
             border: 2px solid #374151;
         }
         .green {
@@ -62,8 +63,8 @@
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8 fade-in">
-            <h1 class="text-5xl font-bold text-white mb-2">📊 Scoreboard Matrix</h1>
-            <p class="text-gray-300 text-lg">Participant Rankings</p>
+            <h1 class="text-5xl font-bold text-white mb-2">RTDT Challenge</h1>
+            <p class="text-gray-300 text-lg">Submission Results</p>
             <div id="lastUpdate" class="text-sm text-gray-400 mt-2"></div>
         </div>
 
@@ -82,17 +83,20 @@
             <table id="scoreTable" class="w-full"></table>
         </div>
 
+        <!-- Stats -->
+        <div id="stats" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 fade-in" style="animation-delay: 0.4s"></div>
+
         <!-- Legend -->
-        <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6 fade-in" style="animation-delay: 0.4s">
+        <div class="mt-6 bg-gray-800 rounded-lg shadow-md p-6 fade-in" style="animation-delay: 0.6s">
             <h3 class="text-xl font-bold text-white mb-4">Legend</h3>
             <div class="flex flex-wrap gap-4">
                 <div class="flex items-center">
                     <div class="w-8 h-8 green rounded mr-2"></div>
-                    <span class="text-gray-300">Value = 0</span>
+                    <span class="text-gray-300">Not corrupted data</span>
                 </div>
                 <div class="flex items-center">
                     <div class="w-8 h-8 red rounded mr-2"></div>
-                    <span class="text-gray-300">Other values</span>
+                    <span class="text-gray-300">Corrupted data</span>
                 </div>
             </div>
         </div>
@@ -153,6 +157,35 @@
                 
                 table.appendChild(tr);
             });
+
+            // Render stats after matrix
+            renderStats();
+        }
+
+        function renderStats() {
+            // Count submissions (all rows except header)
+            const totalSubmissions = allData.length > 1 ? allData.length - 1 : 0;
+            
+            // Count unique participants (unique values in first column, excluding header)
+            const uniqueParticipants = new Set(
+                allData.slice(1).map(row => row[0]).filter(id => id)
+            ).size;
+
+            // Count total cells with value "0"
+            const totalZeros = allData.slice(1).reduce((count, row) => {
+                return count + row.slice(2).filter(cell => cell === '0').length;
+            }, 0);
+
+            document.getElementById('stats').innerHTML = `
+                <div class="bg-gray-800 rounded-lg shadow-md p-6 text-center">
+                    <div class="text-4xl font-bold text-blue-400">${totalSubmissions}</div>
+                    <div class="text-gray-300 mt-2">Total Submissions</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg shadow-md p-6 text-center">
+                    <div class="text-4xl font-bold text-green-400">${uniqueParticipants}</div>
+                    <div class="text-gray-300 mt-2">Unique Participants</div>
+                </div>
+            `;
         }
 
         function updateTimestamp() {
