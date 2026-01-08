@@ -139,10 +139,7 @@ def push_to_github():
 
 
 if __name__ == "__main__":
-    # df_combined = load_submissions_csv()
-    create_random_individual_submissions(sessions_num= 100)
-    df_combined = get_all_df("Submission")
+    df_combined = load_submissions_csv()
     combined = create_overall_df(df_combined)
     combined.to_csv("docs/ranking.csv")
-    print(combined)
     push_to_github()
